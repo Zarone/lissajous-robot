@@ -33,7 +33,7 @@ class Data():
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.settimeout(10)
                 try:
-                    #print("Opening IP Address " + TCP_IP)
+                    print("Opening IP Address " + TCP_IP)
                     self.s.connect((TCP_IP, TCP_PORT))
                     self.s.recv(BUFFER_SIZE)
                     self.connected = True
@@ -97,7 +97,7 @@ class Programmer():
         BUFFER_SIZE = 1024
 
         try:
-            #print("Opening IP Address " + TCP_IP)
+            print("Opening IP Address " + TCP_IP)
             self.s.connect((TCP_IP, TCP_PORT))
             self.s.recv(BUFFER_SIZE)
             self.connected = True
