@@ -1,5 +1,5 @@
 {
     "python.linting.pylintArgs": [
-        "--disable=C0103,C0111"
+        "--disable=C0103,C0111,W0201"
     ]
 }
