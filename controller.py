@@ -3,11 +3,12 @@ from math import sin
 class Controller():
     def __init__(self):
         pass
-    
-    def get_curve(self, r1, r2, w1, w2, phi, rang, step):
+
+    def get_curve(self, r1, r2, w1, w2, phi, points):
         xy = []
-        for t in range(rang):
-            x = r1 * sin(w1*t*step)
-            y = r2 * sin(w2*t*step) + phi
+        for t in range(points):
+            t *= 0.1
+            x = r1 * sin(w1*t+phi)
+            y = r2 * sin(w2*t)
             xy.append((x, y))
         return xy

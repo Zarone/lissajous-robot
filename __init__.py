@@ -1,7 +1,7 @@
 from view import View
 
-app = View()
+APP = View()
 
-app.master.title('Lissajous')
+APP.master.title('Lissajous')
 
-app.mainloop()
+APP.mainloop()
