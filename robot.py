@@ -111,7 +111,7 @@ class Programmer():
             #(Når vi skal sende en streng til robotten,
             # skal den konverteres til et bytearrayself.
             # derfor står der b' foran strengen.)
-            self.s.send(b'  movej([0,-1.5708, 1.5708, -1.5708, -1.5708, 0])\n')
+            self.s.send(b'  movel(p[0, -0.4, 0.15, 0, 3.14, 0])\n')
 
     def move_xyz(self, x, y, z):
         if self.connected:
@@ -133,4 +133,33 @@ class Programmer():
             self.s.send(bytearray(st, 'utf8'))
             self.s.send(b'  movel(var_1)\n')
             self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'end\n')
+
+    def move_curve(self, xy, offset, draw_height):
+        offset_x, offset_y = offset
+        
+        if self.connected:
+            self.s.send(b'def myProg():\n')
+            self.s.send(b'  var_1=get_actual_tcp_pose()\n')
+
+            st = '  var_1[0] = {}\n'.format(xy[0][0] + offset_x)
+            self.s.send(bytearray(st, 'utf8'))
+            st = '  var_1[1] = {}\n'.format(xy[0][1] + offset_y)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
+            st = '  var_1[2] = {}\n'.format(draw_height)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
+
+            for coords in xy:
+                x, y = coords
+                x = float(x)/1000
+                y = float(y)/1000
+                st = '  var_1[0] = {}\n'.format(x + offset_x)
+                self.s.send(bytearray(st, 'utf8'))
+                st = '  var_1[1] = {}\n'.format(y + offset_y)
+                self.s.send(bytearray(st, 'utf8'))
+                self.s.send(b'  movel(var_1, r=0.01)\n')
+            
+            self.move_home()
             self.s.send(b'end\n')

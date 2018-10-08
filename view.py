@@ -79,7 +79,20 @@ class View(tk.Frame):
             self.canvas.create_line(x0 + 250, y0 + 250, x1 + 250, y1 + 250, fill="blue")
 
     def start_drawing(self):
-        pass
+        r1 = self.radius1.get()
+        r2 = self.radius2.get()
+        w1 = self.omega1.get()
+        w2 = self.omega2.get()
+        p = self.phi.get()
+        points = self.points.get()
+
+        try:
+            points = int(points)
+        except ValueError:
+            return
+
+        xy = self.controller.get_curve(r1, r2, w1, w2, p, points)
+        self.controller.start_moving(xy)
 
     def stop_drawing(self):
-        pass
+        self.controller.stop_moving()
