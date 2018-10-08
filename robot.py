@@ -72,7 +72,7 @@ class Data():
         data = b'\x00\x00\x00\x00' + data
 
         if len(data) == 1064:
-            print(time.time())
+            #print(time.time())
             t = struct.unpack(self.fmt, data)
 
             self.package_size = t[0]
@@ -155,11 +155,15 @@ class Programmer():
                 x, y = coords
                 x = float(x)/1000
                 y = float(y)/1000
+                print(x+offset_x, y+offset_y)
                 st = '  var_1[0] = {}\n'.format(x + offset_x)
                 self.s.send(bytearray(st, 'utf8'))
                 st = '  var_1[1] = {}\n'.format(y + offset_y)
                 self.s.send(bytearray(st, 'utf8'))
                 self.s.send(b'  movel(var_1, r=0.01)\n')
-            
+                
+            st = '  var_1[2] = {}\n'.format(0.15)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
             self.move_home()
             self.s.send(b'end\n')
