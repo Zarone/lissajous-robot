@@ -1,4 +1,5 @@
 import tkinter as tk
+from robot import Data, Programmer
 from curve import Curve
 
 class View(tk.Frame):
@@ -7,6 +8,14 @@ class View(tk.Frame):
         self.grid()
 
         self.confirmation_window = None
+
+        ip = '10.130.58.13'
+
+        self.data = Data()
+        self.programmer = Programmer()
+
+        self.data.connect(ip)
+        self.programmer.connect(ip)
 
         self.build_gui()
 
@@ -66,10 +75,10 @@ class View(tk.Frame):
 
         for i in range(0, points-1):
             coord0 = curve.coordinates[i]
-            x0, y0, t0 = coord0
+            x0, y0 = coord0
 
             coord1 = curve.coordinates[i+1]
-            x1, y1, t1 = coord1
+            x1, y1 = coord1
 
             # Ligger 250 til for at centrerer det i billedet
             self.canvas.create_line(x0 + 250, y0 + 250, x1 + 250, y1 + 250, fill="blue")
@@ -85,6 +94,8 @@ class View(tk.Frame):
 
             #Start robotten
 
+            self.programmer.move_curve(curve.coordinates)
+
         def abort():
             close()
 
@@ -92,7 +103,7 @@ class View(tk.Frame):
             dlg.destroy()
             self.confirmation_window = None
 
-            #Tjek om robotten kører, stop den hvis den gør
+            self.programmer.move_home()
 
         dlg = tk.Toplevel(height=200, width=200)
         dlg.protocol("WM_DELETE_WINDOW", close)

@@ -4,6 +4,7 @@ import threading
 import socket
 from math import sin
 
+
 class Data():
     def __init__(self):
         self.connected = False
@@ -72,7 +73,7 @@ class Data():
         data = b'\x00\x00\x00\x00' + data
 
         if len(data) == 1064:
-            print(time.time())
+            #print(time.time())
             t = struct.unpack(self.fmt, data)
 
             self.package_size = t[0]
@@ -84,12 +85,16 @@ class Data():
             self.tool_frame = t[56:6]
             self.program_state = t[-1]
 
+
 class Programmer():
     def __init__(self):
         #Socket til at sende kommandoer til robotten
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(10)
         self.connected = False
+
+        self.offset = (-0.4, -0.4)
+        self.draw_height = 0.1
 
     def connect(self, ip='10.130.58.13'):
         TCP_IP = ip
@@ -111,7 +116,7 @@ class Programmer():
             #(Når vi skal sende en streng til robotten,
             # skal den konverteres til et bytearrayself.
             # derfor står der b' foran strengen.)
-            self.s.send(b'  movej([0,-1.5708, 1.5708, -1.5708, -1.5708, 0])\n')
+            self.s.send(b'  movel(p[0, -0.4, 0.15, 0.024, 3.028, -0.826])\n')
 
     def move_xyz(self, x, y, z):
         if self.connected:
@@ -133,4 +138,36 @@ class Programmer():
             self.s.send(bytearray(st, 'utf8'))
             self.s.send(b'  movel(var_1)\n')
             self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'end\n')
+
+    def move_curve(self, xy):
+        offset_x, offset_y = self.offset
+
+        if self.connected:
+            self.s.send(b'def myProg():\n')
+            self.s.send(b'  var_1=get_actual_tcp_pose()\n')
+
+            st = '  var_1[0] = {}\n'.format(float(xy[0][0])/1000 + offset_x)
+            self.s.send(bytearray(st, 'utf8'))
+            st = '  var_1[1] = {}\n'.format(float(xy[0][1])/1000 + offset_y)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
+            st = '  var_1[2] = {}\n'.format(self.draw_height)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
+
+            for coords in xy:
+                x, y = coords
+                x = float(x)/1000
+                y = float(y)/1000
+                st = '  var_1[0] = {}\n'.format(x + offset_x)
+                self.s.send(bytearray(st, 'utf8'))
+                st = '  var_1[1] = {}\n'.format(y + offset_y)
+                self.s.send(bytearray(st, 'utf8'))
+                self.s.send(b'  movel(var_1, r=0.01)\n')
+
+            st = '  var_1[2] = {}\n'.format(0.15)
+            self.s.send(bytearray(st, 'utf8'))
+            self.s.send(b'  movel(var_1, r=0.01)\n')
+            self.move_home()
             self.s.send(b'end\n')

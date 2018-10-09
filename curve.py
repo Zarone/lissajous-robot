@@ -22,7 +22,7 @@ class Curve():
             t *= 0.1
             x = self.r1 * math.sin(self.w1*t+self.phi)
             y = self.r2 * math.sin(self.w2*t)
-            coordinates.append((x, y, t))
+            coordinates.append((x, y))
 
         self.coordinates = coordinates
         self.created = True
@@ -39,8 +39,8 @@ class Curve():
 
         total = 0.0
         for i in range(0, self.num_points-1):
-            x0, y0, t0 = self.coordinates[i]
-            x1, y1, t1 = self.coordinates[i+1]
+            x0, y0 = self.coordinates[i]
+            x1, y1 = self.coordinates[i+1]
 
             total += math.sqrt(math.pow(x1 - x0, 2) + math.pow(y1 - y0, 2))
 
