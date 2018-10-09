@@ -7,7 +7,7 @@ class Controller():
         self.programmer = Programmer()
 
         self.offset = (-0.4, -0.4)
-        self.draw_height = 0.063
+        self.draw_height = float(70)/1000
 
         self.data.connect(ip)
         self.programmer.connect(ip)

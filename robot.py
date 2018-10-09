@@ -91,6 +91,9 @@ class Programmer():
         self.s.settimeout(10)
         self.connected = False
 
+        self.offset = (-0.4, -0.4)
+        self.draw_height = 0.1
+
     def connect(self, ip='10.130.58.13'):
         TCP_IP = ip
         TCP_PORT = 30002
@@ -111,9 +114,9 @@ class Programmer():
             #(Når vi skal sende en streng til robotten,
             # skal den konverteres til et bytearrayself.
             # derfor står der b' foran strengen.)
-            self.s.send(b'  movel(p[0, -0.4, 0.15, 0, 3.14, 0])\n')
+            self.s.send(b'  movel(p[0, -0.4, 0.15, 0.024, 3.028, -0.826])\n')
 
-    def move_xyz(self, x, y, z):
+    def move_logo(self):
         if self.connected:
             #Når vi skal sende en streng til robotten,
             # skal den konverteres til et bytearrayself.
@@ -135,19 +138,19 @@ class Programmer():
             self.s.send(bytearray(st, 'utf8'))
             self.s.send(b'end\n')
 
-    def move_curve(self, xy, offset, draw_height):
-        offset_x, offset_y = offset
+    def move_curve(self, xy):
+        offset_x, offset_y = self.offset
         
         if self.connected:
             self.s.send(b'def myProg():\n')
             self.s.send(b'  var_1=get_actual_tcp_pose()\n')
 
-            st = '  var_1[0] = {}\n'.format(xy[0][0] + offset_x)
+            st = '  var_1[0] = {}\n'.format(float(xy[0][0])/1000 + offset_x)
             self.s.send(bytearray(st, 'utf8'))
-            st = '  var_1[1] = {}\n'.format(xy[0][1] + offset_y)
+            st = '  var_1[1] = {}\n'.format(float(xy[0][1])/1000 + offset_y)
             self.s.send(bytearray(st, 'utf8'))
             self.s.send(b'  movel(var_1, r=0.01)\n')
-            st = '  var_1[2] = {}\n'.format(draw_height)
+            st = '  var_1[2] = {}\n'.format(self.draw_height)
             self.s.send(bytearray(st, 'utf8'))
             self.s.send(b'  movel(var_1, r=0.01)\n')
 

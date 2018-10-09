@@ -6,9 +6,14 @@ class View(tk.Frame):
         tk.Frame.__init__(self, master)
         self.grid()
 
-        self.controller = Controller()
-
         self.build_gui()
+
+        ip = '10.130.58.13'
+        self.data = Data()
+        self.programmer = Programmer()
+
+        self.data.connect(ip)
+        self.programmer.connect(ip)
 
     def build_gui(self):
         right_frame = tk.Frame(self)
@@ -92,7 +97,7 @@ class View(tk.Frame):
             return
 
         xy = self.controller.get_curve(r1, r2, w1, w2, p, points)
-        self.controller.start_moving(xy)
+        self.programmer.move_curve(xy)
 
     def stop_drawing(self):
-        self.controller.stop_moving()
+        self.programmer.move_home()
